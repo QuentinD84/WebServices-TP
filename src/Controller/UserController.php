@@ -18,7 +18,6 @@ class UserController extends AbstractController
     /**
      * @SWG\Post(
      *     path="/register",
-     *     consumes={"application/x-www-form-urlencoded"},
      *     summary="Permet l'enregistrement des utilisateurs.",
      *     description="Cette route permet l'ajout d'utilisateurs, elle retourne l'id du compte généré à partir du code de la banque (défini dans le .env) et de l'id unique",
      *      @SWG\Parameter(
@@ -77,13 +76,14 @@ class UserController extends AbstractController
         $dotenv = new Dotenv();
         $dotenv->loadEnv(__DIR__."/../../.env");
         $em = $this->getDoctrine()->getManager();
-        $name = $request->request->get('name');
-        $surname = $request->request->get('surname');
-        $gender = $request->request->get('gender');
-        $address = $request->request->get('address');
+        $data = json_decode($request->getContent(), true);
+        $name = $data["name"];
+        $surname = $data["surname"];
+        $gender = $data["gender"];
+        $address = $data["address"];
         $password = $this->generateRandomString();
-        $upperLimit = $request->request->get('upperLimit');
-        $birthday = \DateTime::createFromFormat('Y-m-d', $request->request->get('birthday'));
+        $upperLimit = $data["upperLimit"];
+        $birthday = \DateTime::createFromFormat('Y-m-d', $data["birthday"]);
         $user = new User();
         $user->setName($name);
         $user->setSurname($surname);
