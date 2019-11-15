@@ -1,0 +1,34 @@
+app.swagger_ui:
+  path: /doc
+  methods: GET
+  defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
+app.swagger:
+  path: /doc.json
+  methods: GET
+  defaults: { _controller: nelmio_api_doc.controller.swagger }
+
+login_check:
+  path: /login
+  methods: [POST]
+  controller: App\Controller\UserController::login
+
+register:
+  path: /register
+  controller: App\Controller\UserController::register
+  methods: [POST]
+
+manage_balance:
+  path: /api/customer/manageBalance
+  controller: App\Controller\TransferController::manageBalance
+  methods: [POST]
+
+transfer_money:
+  path: /api/customer/transferMoney
+  controller: App\Controller\TransferController::transferMoney
+  methods: [POST]
+
+transfer_money_bank:
+  path: /api/bank/transferMoney
+  controller: App\Controller\TransferController::transferMoneyBank
+  methods: [POST]
