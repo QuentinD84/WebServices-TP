@@ -32,13 +32,23 @@ security:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
 
+        logout:
+            pattern:   ^/logout
+            stateless: true
+            anonymous: false
+            provider: entity_provider
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+
         api_bank:
             pattern:   ^/api/bank
             stateless: true
             anonymous: true
 
     access_control:
-        - { path: ^/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/customer,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/login_check,    roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register,       roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/customer,   roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/logout,         roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/bank,       roles: IS_AUTHENTICATED_ANONYMOUSLY }

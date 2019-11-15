@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -70,6 +71,11 @@ class User implements UserInterface
      * @Assert\NotBlank()
      */
     private $upperLimit;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $isLoggedIn;
 
     public function getId(): ?int
     {
@@ -240,6 +246,18 @@ class User implements UserInterface
     public function setUpperLimit(int $upperLimit): self
     {
         $this->upperLimit = $upperLimit;
+
+        return $this;
+    }
+
+    public function getIsLoggedIn(): ?int
+    {
+        return $this->isLoggedIn;
+    }
+
+    public function setIsLoggedIn(int $isLoggedIn): self
+    {
+        $this->isLoggedIn = $isLoggedIn;
 
         return $this;
     }

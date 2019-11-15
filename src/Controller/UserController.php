@@ -151,7 +151,36 @@ class UserController extends AbstractController
      * )
      */
     public function login() {
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+        if ($user instanceof User) {
+            $user->setIsLoggedIn(1);
+            $em->persist($user);
+            $em->flush();
+        }
+    }
 
+    /**
+     * @SWG\Post(
+     *     path="/login",
+     *     summary="Permet la déconnexion des utilisateurs.",
+     *     description="Cette route utilise l'ID de l'utilisateur présent dans le token JWT pour le déconnecter et rentre le token invalide.",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="Returns a message for confirmation.",
+     *         @SWG\Schema(type="string", example="User logged out")
+     *      )
+     * )
+     */
+    public function logout() {
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+        if ($user instanceof User) {
+            $user->setIsLoggedIn(0);
+            $em->persist($user);
+            $em->flush();
+        }
+        return new Response("User logged out");
     }
 }
 

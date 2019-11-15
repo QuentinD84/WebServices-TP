@@ -47,10 +47,13 @@ class TransferController extends AbstractController
      */
     public function manageBalance(Request $request)
     {
+        $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
         $em = $this->getDoctrine()->getManager();
-        $user = $this->getUser();
         if ($user instanceof User) {
+            if (!$user->getIsLoggedIn()) {
+                return new Response("Expired JWT Token.", 401);
+            }
             if (($user->getBalance()+$data["amount"]) > $user->getUpperLimit()) {
                 return new Response("You can't exceed your upper limit.", 401);
             }
@@ -68,7 +71,7 @@ class TransferController extends AbstractController
      * @SWG\Post(
      *     path="/api/customer/transferMoney",
      *     summary="Permet d'effectuer des virements internes ou externes",
-     *     description="Si le compte destinataire est dans la même banque, le virement est effectué immédiatement. Autrement, le virement est envoyé à la seconde banque qui se réserve le droit de le refuser.",
+     *     description="Si le compte destinataire est dans la même banque, le virement est effectué immédiatement. Autrement, le virement est envoyé à la seconde banque qui se réserve le droit de le refuser. Les 5 premiers chiffres de l'id de compte permettent de définir si le compte appartient à la banque courante. Le cas contraire, deux variables présentes dans le fichier d'environnement permettent de faire le mapping entre l'ID de la banque et le port de communication avec son API. La banque envoie donc une nouvelle requête en s'identifiant avec son Bankid (pour l'occasion, égal à son ID) et en renvoyant le body initial. La banque bénéficiaire fait alors toutes les vérifications nécessaires (vérification du Bankid, du solde inférieur au plafond, de l'existence de l'ID de compte.). Elle renvoie en sutie à la banque émettrice le code de succès ou d'erreur.",
      *      @SWG\Parameter(
      *         name="amount",
      *         in="body",
@@ -109,6 +112,9 @@ class TransferController extends AbstractController
         $toUser = $em->getRepository("App:User")->findOneBy(array("accountId" => $data["accountId"]));
         $user = $this->getUser();
         if ($user instanceof User && $toUser instanceof User) {
+            if (!$user->getIsLoggedIn()) {
+                return new Response("Expired JWT Token.", 401);
+            }
             if (($toUser->getBalance()+$data["amount"]) > $toUser->getUpperLimit()) {
                 return new Response("The beneficiary has reached his upper limit.", 401);
             }
